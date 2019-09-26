@@ -1,0 +1,26 @@
+---
+- name: Configure filesystem on multiple nodes
+  hosts: servera.lab.example.com
+  vars:
+          fs_type: ext4
+          mount_point: /brick010
+          disk: /dev/vdb
+
+  tasks:
+    - name: Create partition
+      parted:
+        device: "{{ disk }}"
+        number: 1
+        state: present
+
+    - name: Create Filesystem
+      filesystem:
+        fstype: "{{ fs_type }}"
+        dev: "{{ disk }}1"
+    
+    - name: Mount filesystem and add fstab entry
+      mount:
+        path: "{{ mount_point }}"
+        src: "{{ disk }}1"
+        fstype: "{{ fs_type }}"
+        state: mounted
